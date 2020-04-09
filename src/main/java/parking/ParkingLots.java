@@ -1,7 +1,5 @@
 package parking;
 
-import java.util.Objects;
-
 public class ParkingLots {
     private String id;
     private int space;

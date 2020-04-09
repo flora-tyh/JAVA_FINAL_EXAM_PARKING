@@ -1,5 +1,6 @@
 import exception.InvalidTicketException;
 import exception.ParkingLotFullException;
+import parking.Parking;
 import parking.ParkingLots;
 import java.util.List;
 import java.util.Scanner;

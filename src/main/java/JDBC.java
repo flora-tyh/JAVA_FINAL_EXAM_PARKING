@@ -150,7 +150,7 @@ public class JDBC {
             rs = ptmt.executeQuery();
             while (rs.next()) {
                 Parking parking = new Parking(
-                        rs.getInt("id"), rs.getString("car_number"));
+                        rs.getInt("num"), rs.getString("car_number"));
                 parkingArrayList.add(parking);
             }
             return parkingArrayList;

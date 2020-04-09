@@ -2,21 +2,21 @@ package parking;
 
 public class Parking {
     private int num;
-    private String licenseNumber;
+    private String carNumber;
 
     public Parking() {
     }
 
-    public Parking(int num, String licenseNumber) {
+    public Parking(int num, String carNumber) {
         this.num = num;
-        this.licenseNumber = licenseNumber;
+        this.carNumber = carNumber;
     }
 
     public int getNum() {
         return num;
     }
 
-    public String getLicenseNumber() {
-        return licenseNumber;
+    public String getCarNumber() {
+        return carNumber;
     }
 }
