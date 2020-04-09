@@ -4,7 +4,6 @@ import parking.ParkingLots;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 
 
@@ -222,7 +221,7 @@ public class JDBC {
         }
     }
 
-    public static int deleteCar(String parkingId, int spaceId) {
+    public static void deleteCar(String parkingId, int spaceId) {
         Connection conn = null;
         PreparedStatement ptmt = null;
 
@@ -231,8 +230,7 @@ public class JDBC {
             String sql = "DELETE FROM `parking_lot`." + parkingId + " WHERE (`num` = ?);";
             ptmt = conn.prepareStatement(sql);
             ptmt.setInt(1, spaceId);
-            int i  = ptmt.executeUpdate();
-            return i;
+            ptmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
