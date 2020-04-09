@@ -94,11 +94,28 @@ public class JDBC {
         try {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
             String sql = "CREATE TABLE "+ id +" (\n" +
-                    "  `num` int NOT NULL AUTO_INCREMENT,\n" +
+                    "  `num` int NOT NULL,\n" +
                     "  `car_number` varchar(6) DEFAULT NULL,\n" +
                     "  PRIMARY KEY (`num`)\n" +
                     ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
             ptmt = conn.prepareStatement(sql);
+            ptmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            close(conn, ptmt);
+        }
+    }
+
+    public static void insertParking(String parkingId, int spaceId) {
+        Connection conn = null;
+        PreparedStatement ptmt = null;
+
+        try {
+            conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            String sql = "INSERT INTO `parking_lot`." + parkingId + " (`num`) VALUES (?);";
+            ptmt = conn.prepareStatement(sql);
+            ptmt.setInt(1, spaceId);
             ptmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -162,13 +179,13 @@ public class JDBC {
         }
     }
 
-    public static void countParkingSpace(String parkingId) {
+    public static void changeParkingSpace(String parkingId, int spaceChange) {
         Connection conn = null;
         PreparedStatement ptmt = null;
 
         try {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            String sql = "UPDATE `parking_lot`.`parking_lots` SET `rest_space` = rest_space - 1 WHERE (`id` = ?);\n";
+            String sql = "UPDATE `parking_lot`.`parking_lots` SET `rest_space` = rest_space + " + spaceChange + " WHERE (`id` = ?);\n";
             ptmt = conn.prepareStatement(sql);
             ptmt.setString(1, parkingId);
             ptmt.executeUpdate();
@@ -185,7 +202,7 @@ public class JDBC {
 
         try {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            String sql = "INSERT INTO `parking_lot`."+ parkingId + " (`car_number`) VALUES (?);";
+            String sql = "UPDATE `parking_lot`." + parkingId + " SET car_number = ? WHERE car_number IS NULL LIMIT 1;";
             ptmt = conn.prepareStatement(sql);
             ptmt.setString(1, carNumber);
             ptmt.executeUpdate();
@@ -196,23 +213,23 @@ public class JDBC {
         }
     }
 
-    public static boolean findCar(String parkingId, int spaceId, String carNumber) {
+    public static int findCar(String parkingId, String carNumber) {
         Connection conn = null;
         PreparedStatement ptmt = null;
         ResultSet rs = null;
 
         try {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            String sql = "SELECT num,\n" +
-                    "    car_number\n" +
+            String sql = "SELECT num " +
                     "FROM " + parkingId +
-                    " WHERE num = ? " +
-                    "AND car_number = ?;";
+                    " WHERE car_number = ?;";
             ptmt = conn.prepareStatement(sql);
-            ptmt.setInt(1, spaceId);
-            ptmt.setString(2, carNumber);
+            ptmt.setString(1, carNumber);
             rs = ptmt.executeQuery();
-            return rs.next();
+            if (rs.next()) {
+                return rs.getInt("num");
+            }
+            return -1;
         } catch (SQLException e) {
             e.printStackTrace();
             throw new InvalidTicketException("很抱歉，无法通过您提供的停车券为您找到相应的车辆，请您再次核对停车券是否有效");
@@ -227,7 +244,7 @@ public class JDBC {
 
         try {
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
-            String sql = "DELETE FROM `parking_lot`." + parkingId + " WHERE (`num` = ?);";
+            String sql = "UPDATE `parking_lot`." + parkingId + " SET `car_number` = null  WHERE (`num` = ?);";
             ptmt = conn.prepareStatement(sql);
             ptmt.setInt(1, spaceId);
             ptmt.executeUpdate();
